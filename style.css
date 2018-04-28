@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  background-color: aliceblue;
+}
+
+canvas#pfx-system {
+  position: fixed;
+  z-index: -1;
+}
