@@ -1,69 +1,4 @@
-class ConfigPool {
-  constructor(config, initialSize) {
-    this.config = config;
-
-    this.pool = [];
-    for(let i = 0; i < initialSize; i++) {
-      this.pool.push(this.createParticle());
-    }
-
-    this.api = {
-      spawn: this.spawn.bind(this),
-      despawn: this.despawn.bind(this),
-    };
-
-    this.active = [];
-  }
-
-  step(dt, context) {
-    let delCount = 0;
-    for (let i = 0; i < this.active.length; i++) {
-      const p = this.active[i];
-      if (p.__markForDelete === true) {
-        delCount += 1;
-        delete p.__markForDelete;
-        this.pool.push(p);
-      } else {
-        p.step(dt, context, this.api);
-        if (delCount > 0) {
-          this.active[i - delCount] = p;
-        }
-      }
-    }
-    this.active.length -= delCount;
-
-    this.config.step(dt, context, this.api);
-  }
-
-  spawn(options) {
-    let p;
-    if (this.pool.length > 0) {
-      p = this.pool[this.pool.length - 1];
-      this.pool.length = this.pool.length - 1;
-    } else {
-      p = this.createParticle();
-    }
-
-    if (!this.optionsKeys) {
-      this.optionsKeys = Object.keys(options);
-    }
-
-    for (let i = 0; i < this.optionsKeys.length; i++) {
-      const key = this.optionsKeys[i];
-      p[key] = options[key];
-    }
-
-    this.active.push(p);
-  }
-
-  despawn(p) {
-    p.__markForDelete = true;
-  }
-
-  createParticle() {
-    return new this.config.ParticleClass();
-  }
-}
+import ConfigPool from './config-pool.js';
 
 export default class PfxSystem {
   constructor(canvas) {
@@ -71,13 +6,20 @@ export default class PfxSystem {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
 
-    this.context = this.canvas.getContext('2d');
-
+    // initialize private vars
     this.configs = [];
     this.prev = 0;
     this.stopScheduled = false;
 
+    // cached vars
+    this.context = this.canvas.getContext('2d');
     this.boundStep = this.step.bind(this);
+  }
+
+  // TODO: how to set the best initial pool size?
+  addConfig(config, options, initialPoolSize = 800) {
+    const pool = new ConfigPool(config, options, this.canvas, initialPoolSize);
+    this.configs.push(pool);
   }
 
   step() {
@@ -92,9 +34,9 @@ export default class PfxSystem {
 
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.configs.forEach((config) => {
-      config.step(dt, this.context);
-    });
+    for (let i = 0; i < this.configs.length; i++) {
+      this.configs[i].step(dt);
+    }
 
     window.requestAnimationFrame(this.boundStep);
   }
@@ -106,14 +48,5 @@ export default class PfxSystem {
 
   stop() {
     this.stopScheduled = true;
-  }
-
-  addConfig(config, options) {
-    // TODO: how to set the best initial pool size?
-    const instance = new config.System();
-    instance.ParticleClass = config.Particle;
-    Object.assign(instance, options);
-    const pool = new ConfigPool(instance, 800);
-    this.configs.push(pool);
   }
 }

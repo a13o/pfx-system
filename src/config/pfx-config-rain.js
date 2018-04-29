@@ -1,5 +1,5 @@
 class Particle {
-  step(dt, context, api) {
+  step(dt, api) {
     if (this.y >= this.lifespan) {
       api.despawn(this);
       return;
@@ -7,8 +7,8 @@ class Particle {
 
     this.y += (this.velocity / 1000) * dt;
 
-    context.fillStyle = this.color;
-    context.fillRect(
+    api.context.fillStyle = this.color;
+    api.context.fillRect(
       (this.x + 0.5) | 0, // round
       (this.y + 0.5) | 0, // round
       this.size,
@@ -31,7 +31,7 @@ class System {
     this.spawner = {};
   }
 
-  step(dt, context, api) {
+  step(dt, api) {
     this.timePassed += dt;
 
     const spawnRate = (1 / this.frequency) * 1000;
