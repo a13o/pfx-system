@@ -20,7 +20,9 @@ export default class ConfigPool {
   }
 
   createParticle() {
-    return new this.ParticleClass();
+    const p = new this.ParticleClass();
+    p.__markForDelete = false;
+    return p;
   }
 
   step(dt) {
@@ -29,7 +31,7 @@ export default class ConfigPool {
       const p = this.active[i];
       if (p.__markForDelete === true) {
         delCount += 1;
-        delete p.__markForDelete;
+        p.__markForDelete = false;
         this.pool.push(p);
       } else {
         p.step(dt, this.api);
