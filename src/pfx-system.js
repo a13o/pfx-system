@@ -22,13 +22,12 @@ export default class PfxSystem {
     this.configs.push(pool);
   }
 
-  step() {
+  step(now) {
     if(this.stopScheduled) {
       this.stopScheduled = false;
       return;
     }
 
-    const now = Date.now();
     const dt = now - this.prev;
     this.prev = now;
 
@@ -42,7 +41,7 @@ export default class PfxSystem {
   }
 
   start() {
-    this.prev = Date.now();
+    this.prev = performance.now();
     window.requestAnimationFrame(this.boundStep);
   }
 
