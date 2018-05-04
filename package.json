@@ -1,0 +1,23 @@
+{
+  "name": "pfx-system",
+  "version": "0.2.0",
+  "description": "An easy to use plugin-ready particle system using Canvas",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "repository": "github:a13o/pfx-system",
+  "keywords": [
+    "particles",
+    "particle-system",
+    "javascript",
+    "canvas"
+  ],
+  "author": "a13o",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/a13o/pfx-system/issues"
+  },
+  "homepage": "https://github.com/a13o/pfx-system#readme",
+  "devDependencies": {}
+}
