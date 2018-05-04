@@ -46,13 +46,13 @@ export default class ConfigPool {
   }
 
   spawn(options) {
-    let p;
-    if (this.pool.length > 0) {
-      p = this.pool[this.pool.length - 1];
-      this.pool.length = this.pool.length - 1;
-    } else {
-      p = this.createParticle();
+    const last = this.pool.length - 1;
+    if (last < 0) {
+      return;
     }
+
+    const p = this.pool[last];
+    this.pool.length = last;
 
     if (!this.optionsKeys) {
       this.optionsKeys = Object.keys(options);
