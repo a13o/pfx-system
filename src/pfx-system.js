@@ -31,6 +31,10 @@ export default class PfxSystem {
     const dt = now - this.prev;
     this.prev = now;
 
+    if (this.__debug) {
+      this.collectDebugInfo(dt);
+    }
+
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     for (let i = 0; i < this.configs.length; i++) {
@@ -47,5 +51,23 @@ export default class PfxSystem {
 
   stop() {
     this.stopScheduled = true;
+  }
+
+  set debug(val) {
+    this.__debug = val ? {
+      frame: 0,
+      clock: 0,
+    } : false;
+  }
+
+  collectDebugInfo(dt) {
+    this.__debug.frame ++;
+    this.__debug.clock += dt;
+    if (this.__debug.clock > 2000) {
+      const fps = (this.__debug.frame * 1000) / this.__debug.clock << 0;
+      this.__debug.frame = 0;
+      this.__debug.clock = 0;
+      console.info(`FPS ${fps}`);
+    }
   }
 }

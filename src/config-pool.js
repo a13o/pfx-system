@@ -48,6 +48,7 @@ export default class ConfigPool {
   spawn(options) {
     const last = this.pool.length - 1;
     if (last < 0) {
+      // TODO: set a starvation flag for the debug layer to report on
       return;
     }
 
