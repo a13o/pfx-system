@@ -6,6 +6,8 @@ export default class PfxSystem {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
 
+    document.addEventListener("visibilitychange", this.onVisibilityChange.bind(this));
+
     // initialize private vars
     this.configs = [];
     this.prev = 0;
@@ -51,6 +53,14 @@ export default class PfxSystem {
 
   stop() {
     this.stopScheduled = true;
+  }
+
+  onVisibilityChange() {
+    if (document.hidden) {
+      this.stop();
+    } else {
+      this.start();
+    }
   }
 
   set debug(val) {
