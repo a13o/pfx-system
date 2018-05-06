@@ -1,3 +1,6 @@
+const MARK_FOR_DELETE = Symbol('mark-for-delete');
+const NEXT = Symbol('next');
+
 export default class ConfigPool {
   constructor(config, options, canvas, initialSize) {
     this.system = new config.System();
@@ -5,19 +8,13 @@ export default class ConfigPool {
 
     this.ParticleClass = config.Particle;
 
-    this.pool = {
-      __head: true,
-      __next: null,
-    };
-    this.active = {
-      __head: true,
-      __next: null,
-    };
+    this.pool = { [NEXT]: null };
+    this.active = { [NEXT]: null };
 
     let curr = this.pool;
     for (let i = 0; i < initialSize; i++) {
-      curr.__next = this.createParticle();
-      curr = curr.__next;
+      curr[NEXT] = this.createParticle();
+      curr = curr[NEXT];
     }
 
     this.api = {
@@ -29,31 +26,31 @@ export default class ConfigPool {
 
   createParticle() {
     const p = new this.ParticleClass();
-    p.__markForDelete = false;
-    p.__next = null;
+    p[MARK_FOR_DELETE] = false;
+    p[NEXT] = null;
     return p;
   }
 
   step(dt) {
-    let curr = this.active.__next;
+    let curr = this.active[NEXT];
     let prev = this.active;
     while(curr !== null) {
-      if (curr.__markForDelete === true) {
-        curr.__markForDelete = false;
+      if (curr[MARK_FOR_DELETE] === true) {
+        curr[MARK_FOR_DELETE] = false;
 
         // slice from active list
-        prev.__next = curr.__next;
+        prev[NEXT] = curr[NEXT];
 
         // add to front of pool
-        curr.__next = this.pool.__next;
-        this.pool.__next = curr;
+        curr[NEXT] = this.pool[NEXT];
+        this.pool[NEXT] = curr;
 
         // set the loop pointer
-        curr = prev.__next;
+        curr = prev[NEXT];
       } else {
         curr.step(dt, this.api);
         prev = curr;
-        curr = curr.__next;
+        curr = curr[NEXT];
       }
     }
 
@@ -61,14 +58,14 @@ export default class ConfigPool {
   }
 
   spawn(options) {
-    const p = this.pool.__next;
+    const p = this.pool[NEXT];
 
     if (p === null) {
       // TODO: set a starvation flag for the debug layer to report on
       return;
     }
 
-    this.pool.__next = p.__next;
+    this.pool[NEXT] = p[NEXT];
 
     if (!this.optionsKeys) {
       this.optionsKeys = Object.keys(options);
@@ -79,11 +76,11 @@ export default class ConfigPool {
       p[key] = options[key];
     }
 
-    p.__next = this.active.__next;
-    this.active.__next = p;
+    p[NEXT] = this.active[NEXT];
+    this.active[NEXT] = p;
   }
 
   despawn(p) {
-    p.__markForDelete = true;
+    p[MARK_FOR_DELETE] = true;
   }
 }
