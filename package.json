@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "build": "webpack"
+  },
+  "devDependencies": {
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
+  },
+  "name": "pfx-system",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a13o/pfx-system.git"
+  },
+  "author": "Andrew Pellerano",
+  "license": "MIT"
+}
