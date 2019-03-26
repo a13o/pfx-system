@@ -1,5 +1,5 @@
-import PfxSystem from './src/pfx-system.js';
-import RainConfig from './src/config/pfx-config-rain.js';
+import PfxSystem from '../packages/pfx-system/src/pfx-system.js';
+import RainConfig from '../packages/pfx-config-rain/index.js';
 
 const pfx = new PfxSystem();
 
